@@ -7,15 +7,17 @@ const Statistics = (props) => {
   if (props.all === 0) 
     return <p>No feedback given</p>
   return (<div>
-    <p>good: {props.good}</p>
-    <p>neutral: {props.neutral}</p>
-    <p>bad: {props.bad}</p>
-    <p>all: {props.all}</p>
-    <p>average: {props.average}</p>
-    <p>positive: {props.positivePercentage}</p>
+    <StatisticsLine text="good" value={props.good} />
+    <StatisticsLine text="neutral" value={props.neutral} />
+    <StatisticsLine text="bad" value={props.bad} />
+    <StatisticsLine text="all" value={props.all} />
+    <StatisticsLine text="average" value={props.average} />
+    <StatisticsLine text="positive" value={props.positivePercentage} />
   </div>
   )
 }
+
+const StatisticsLine = ({ text, value}) => <p>{text} {value}</p>
 
 const App = () => {
   const [good, setGood] = useState(0)
