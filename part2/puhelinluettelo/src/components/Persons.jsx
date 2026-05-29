@@ -1,8 +1,15 @@
-const Persons = ({ filterPersons }) => {
+import React from 'react'
+
+const Persons = ({ filterPersons, deletePerson }) => {
   return (
     <div>
       {filterPersons.map((person) => (
-        <p key={person.name}>{person.name} {person.number}</p>
+        <React.Fragment key={person.id}>
+          <p>{person.name} {person.number}</p>
+          <button onClick={() => deletePerson(person.id)}>
+            delete
+          </button>
+        </React.Fragment>
       ))}
     </div>
   )

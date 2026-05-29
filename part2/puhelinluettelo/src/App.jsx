@@ -3,6 +3,7 @@ import axios from 'axios'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
+import personService from './services/servercoms'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,8 +12,8 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
         setPersons(response.data)
       })
@@ -29,14 +30,25 @@ const App = () => {
       return
     }
 
-    axios
-      .post('http://localhost:3001/persons', personObject)
+    personService
+      .create(personObject)
       .then(response => {
         setPersons(persons.concat(response.data))
         setNewName('')
         setNewNumber('')
       })
   }
+
+  const deletePerson = (id) => {
+    const person = persons.find(p => p.id === id)
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id))
+        })
+      }
+    }
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleFilterChange = (event) => setFilter(event.target.value)
@@ -66,6 +78,7 @@ const App = () => {
 
       <Persons 
         filterPersons={filterPersons} 
+        deletePerson={deletePerson} 
         />
     </div>
   )
