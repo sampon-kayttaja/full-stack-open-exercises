@@ -4,9 +4,6 @@ import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 
-
-
-
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -31,15 +28,19 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
     }
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+
+    axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleFilterChange = (event) => setFilter(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
-
   const filterPersons = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
 
   return (
