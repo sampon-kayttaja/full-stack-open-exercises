@@ -1,4 +1,4 @@
-const NotifError = ({ message }) => {
+const Notif = ({ message }) => {
   if (message === null) {
     return null
   }
