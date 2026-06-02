@@ -1,6 +1,6 @@
 import Button from './Button'
 import SingleCountry from './SingleCountry'
-
+import Weather from './Weather'
 
 const Countries = ({ filteredCountries, handleShowCountry }) => {
   if (filteredCountries.length > 10) {
@@ -12,7 +12,10 @@ const Countries = ({ filteredCountries, handleShowCountry }) => {
   else if (filteredCountries.length === 1) {
     const country = filteredCountries[0]
     return (
-      <SingleCountry country={country} />
+      <div>
+        <SingleCountry country={country} />
+        <Weather country={country} />
+      </div>
     )
   } 
   else {

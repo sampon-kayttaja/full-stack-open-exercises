@@ -5,6 +5,7 @@ import Countries from './components/Countries'
 import Notif from './components/Notif'
 import SingleCountry from './components/SingleCountry'
 import Button from './components/Button'
+import Weather from './components/Weather'
 
 const App = () => {
   const [countryFilter, setFilter] = useState('')
@@ -27,7 +28,6 @@ const App = () => {
 
   const filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(countryFilter.toLowerCase()))
 
-
   if (showCountry) {
     return (
       <div>
@@ -36,6 +36,7 @@ const App = () => {
           handleFilterChange={handleFilterChange}
         />
       <SingleCountry country={showCountry} />
+      <Weather country={showCountry} />
       <Button text="Back" onClick={() => setShowCountry(null)}/>
       </div>
     )
@@ -48,11 +49,11 @@ const App = () => {
           filter={countryFilter} 
           handleFilterChange={handleFilterChange}
           />
-      <Countries 
-        filteredCountries={filteredCountries} 
-        handleShowCountry={handleShowCountry}
-        />
-    </div>
+        <Countries 
+          filteredCountries={filteredCountries} 
+          handleShowCountry={handleShowCountry}
+          />
+      </div>
     )}
   }
   
