@@ -13,7 +13,6 @@ mongoose.connect(url, { family: 4 })
     console.log('error connecting to MongoDB:', error.message)
   })
 const personSchema = new mongoose.Schema({
-  id: Number,
   name: String,
   number: String,
 })
