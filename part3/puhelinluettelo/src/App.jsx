@@ -28,13 +28,6 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    if (newName === '' || newNumber === '') {
-      setErrorMessage('Name and number cannot be empty')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-      return
-    }
 
     if (persons.some(person => person.name === newName)) {
       const person = persons.find(p => p.name === newName)
@@ -55,21 +48,18 @@ const App = () => {
             setNotificationMessage(null)
           }, 5000)
         })
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)  
+        })
     }
   }
 
   const updatePerson = (id, personObject) => {
     personService
       .updateNumber(id, personObject)
-      .catch(error => {
-        setErrorMessage(
-          `Contact '${personObject.name}' was already removed from server`
-        )
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-        return
-      })   
       .then(response => {
         setPersons(persons.map(p => p.id !== id ? p : response.data))
         setNotificationMessage(`Updated ${response.data.name}'s number`)
@@ -77,7 +67,12 @@ const App = () => {
           setNotificationMessage(null)
         }, 5000)
       })
-      
+      .catch(error => {
+        setErrorMessage(error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
   }
 
   const deletePerson = (id) => {
