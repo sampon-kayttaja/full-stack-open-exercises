@@ -10,7 +10,8 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf dist && cd ../puhelinluettelo && npm run build && cp -r dist ../puhelinluettelobackend"
+    "build:ui": "rm -rf dist && cd ../puhelinluettelo && npm run build && cp -r dist ../puhelinluettelobackend",
+    "lint": "eslint ."
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -19,5 +20,11 @@
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.3",
     "morgan": "^1.11.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0"
   }
 }
