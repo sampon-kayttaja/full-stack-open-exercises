@@ -79,6 +79,39 @@ test('if no title or url, 400 bad request', async () => {
   assert.strictEqual(curBlogs.length, helper.initialBlogs.length)
 })
 
+
+test('deleting post deletes posts', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const ids = blogsAtEnd.map(n => n.id)
+  assert(!ids.includes(blogToDelete.id))
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+  
+
+test('editing posts edits posts', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToEdit = blogsAtStart[0]
+
+  const updatedBlog = {
+    title: blogToEdit.title,
+    author: blogToEdit.author,
+    url: blogToEdit.url,
+    likes: blogToEdit.likes + 1,
+  }
+
+  const response = await api.put(`/api/blogs/${blogToEdit.id}`, updatedBlog)
+  
+  assert.notStrictEqual(response.body.likes, blogToEdit.likes)
+})
+
+
 after(async () => {
   await mongoose.connection.close()
 })
