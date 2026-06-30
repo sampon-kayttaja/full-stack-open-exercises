@@ -1,12 +1,13 @@
 import { useAnecdoteActions } from "../store"
+import anecdoteService from "../services/anecdotes"
 
 const AnecdoteForm = () => {
   const { add } = useAnecdoteActions()
-  const generateId = () => Number((Math.random() * 1000000).toFixed(0))
+
   const addAnecdote = (e) => {
     e.preventDefault()
     const content = e.target.anecdote.value
-    add({ id: generateId(), content, votes: 0 })
+    add(content)
     e.target.reset()
   }
   
