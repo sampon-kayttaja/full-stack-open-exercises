@@ -11,6 +11,7 @@ const asObject = anecdote => ({
 
 const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
+  notification: '',
   filter: '',
   actions: {
     add: async (content) => {
@@ -30,7 +31,9 @@ const useAnecdoteStore = create((set, get) => ({
     initialize: async () => {
       const anecdotes = await anecdoteService.getAll()  
       set ({anecdotes})
-    }
+    },
+    setNotification: (message) => set({ notification: message }),
+    clearNotification: () => set({ notification: '' })
   }
 }))
 
@@ -39,4 +42,5 @@ export const useAnecdotes = () => {
   const filter = useAnecdoteStore(state => state.filter)
   return anecdotes.filter(n => n.content.toLowerCase().includes(filter.toLowerCase()))
 }
+export const useNotification = () => useAnecdoteStore(state => state.notification)
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)

@@ -2,13 +2,18 @@ import { useAnecdoteActions } from "../store"
 import anecdoteService from "../services/anecdotes"
 
 const AnecdoteForm = () => {
-  const { add } = useAnecdoteActions()
+  const { add, setNotification, clearNotification } = useAnecdoteActions()
 
   const addAnecdote = (e) => {
     e.preventDefault()
     const content = e.target.anecdote.value
     add(content)
     e.target.reset()
+
+    setNotification(`you created '${content}'`)
+    setTimeout(() => {
+      clearNotification()
+    }, 5000)
   }
   
   return (
