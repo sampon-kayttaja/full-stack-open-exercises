@@ -2,7 +2,7 @@ import { useAnecdotes, useAnecdoteActions } from "../store"
  
 const AnecdoteList = () => {
   const anecdotes = useAnecdotes()
-  const { vote, setNotification, clearNotification } = useAnecdoteActions()
+  const { vote, setNotification, clearNotification, deleteAnecdote } = useAnecdoteActions()
 
   const sortedAnecdotes = anecdotes.toSorted((a, b) => b.votes - a.votes)
 
@@ -15,6 +15,13 @@ const AnecdoteList = () => {
     }, 5000)
   }
 
+  const handleDelete = async (anecdote) => {
+    await deleteAnecdote(anecdote.id)
+
+    setNotification(`you deleted '${anecdote.content}'`)
+    setTimeout(() => clearNotification(), 5000)
+  } 
+
   return (
     <>
       {sortedAnecdotes.map(anecdote => (
@@ -23,6 +30,9 @@ const AnecdoteList = () => {
         <div>
         has {anecdote.votes}
         <button onClick={() => handleVote(anecdote)}>vote</button>
+        {anecdote.votes === 0 && (
+              <button onClick={() => handleDelete(anecdote)}>delete</button>
+            )}
         </div>
       </div>
     ))}

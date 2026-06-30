@@ -40,6 +40,13 @@ const update = async (id, anecdote) => {
   return await response.json()
 }
 
+const remove = async (id) => {
+  const response = await fetch(`${baseUrl}/${id}`, {
+    method: 'DELETE'
+  })
+  if (!response.ok) {
+    throw new Error('failed to delete anecdote')
+  }
+}
 
-
-export default { getAll, createNew, update }
+export default { getAll, createNew, update, remove }
