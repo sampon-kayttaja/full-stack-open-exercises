@@ -104,6 +104,23 @@ const App = () => {
       })
   }
 
+  const likeBlog = (id) => {
+    const blog = blogs.find(b => b.id === id)
+    const changedBlog = { ...blog, likes: blog.likes + 1 }
+
+    blogService
+      .update(id, changedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(b => b.id !== id ? b : returnedBlog))
+      })
+      .catch(error => {
+        setErrorMessage(`the blog '${blog.title}' was already removed from server`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+
   return (
     <div>
       <h1><i>Blog App</i></h1>
@@ -127,7 +144,7 @@ const App = () => {
           {blogForm()}
           <h3>Blogs:</h3>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
           )}
         </div>
       )}
