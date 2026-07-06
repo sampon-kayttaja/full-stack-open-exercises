@@ -121,6 +121,36 @@ const App = () => {
       })
   }
 
+  const deleteBlog = (id) => {
+    const blog = blogs.find(b => b.id === id)
+
+    if (user.username !== blog.user.username) {
+      setErrorMessage('unauthorized: not the creator of this blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+      return
+    }
+
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter(b => b.id !== id))
+          setSuccessMessage(`the blog '${blog.title}' was deleted`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(`the blog '${blog.title}' was already removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        }
+    )}
+  }
+
   const blogsSorted = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
@@ -146,7 +176,7 @@ const App = () => {
           {blogForm()}
           <h3>Blogs:</h3>
           {blogsSorted.map(blog =>
-            <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
+            <Blog key={blog.id} blog={blog} likeBlog={likeBlog} deleteBlog={deleteBlog} user={user} />
           )}
         </div>
       )}
