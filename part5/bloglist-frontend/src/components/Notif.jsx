@@ -1,25 +1,12 @@
-const Error = ({ message }) => {
-  if (message === null) {
-    return null
-  }
+const Notif = ({ type, message }) => {
+  if (message === null) return null
 
   return (
-    <div className="error">
+    <div className={type}>
       {message}
     </div>
   )
 }
 
-const Success = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="success">
-      {message}
-    </div>
-  )
-}
-
-export default { Error, Success }
+export const ErrorMessage = (props) => <Notif type="error" {...props} />
+export const SuccessMessage = (props) => <Notif type="success" {...props} />

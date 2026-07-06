@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
-import Notif from './components/Notif'
+import { ErrorMessage, SuccessMessage} from './components/Notif'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
@@ -12,8 +12,8 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
 
@@ -29,7 +29,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   const handleLogin = async event => {
@@ -39,7 +39,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -67,7 +67,7 @@ const App = () => {
       />
     )
   }
-  
+
   const blogForm = () => {
     return (
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
@@ -96,7 +96,7 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage('error creating blog')
         setTimeout(() => {
           setErrorMessage(null)
@@ -113,7 +113,7 @@ const App = () => {
       .then(returnedBlog => {
         setBlogs(blogs.map(b => b.id !== id ? b : returnedBlog))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(`the blog '${blog.title}' was already removed from server`)
         setTimeout(() => {
           setErrorMessage(null)
@@ -137,12 +137,12 @@ const App = () => {
         .remove(id)
         .then(() => {
           setBlogs(blogs.filter(b => b.id !== id))
-          setSuccessMessage(`the blog '${blog.title}' was deleted`)
+          setSuccessMessage(`the blog '${blog.title}' was removed successfully`)
           setTimeout(() => {
             setSuccessMessage(null)
           }, 5000)
         })
-        .catch(error => {
+        .catch(() => {
           setErrorMessage(`the blog '${blog.title}' was already removed from server`)
           setTimeout(() => {
             setErrorMessage(null)
@@ -159,16 +159,16 @@ const App = () => {
       {!user && (
         <div>
           <h2>login</h2>
-          <Notif.Error message={errorMessage}/>
-          <Notif.Success message={successMessage}/>
+          <ErrorMessage message={errorMessage}/>
+          <SuccessMessage message={successMessage}/>
           {loginForm()}
         </div>
-        )}
+      )}
 
       {user && (
         <div>
-          <Notif.Error message={errorMessage}/>
-          <Notif.Success message={successMessage}/>
+          <ErrorMessage message={errorMessage}/>
+          <SuccessMessage message={successMessage}/>
           <p>{user.name} logged in</p>
           <button onClick={logout}>
             logout
@@ -182,6 +182,6 @@ const App = () => {
       )}
     </div>
   )
-} 
-    
+}
+ 
 export default App

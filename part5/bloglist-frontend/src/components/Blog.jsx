@@ -11,17 +11,17 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
     marginBottom: 5
   }
   const userCheck = user.username === blog.user.username
-  
+
   return (
     <div style={blogStyle}>
       {!expanded && (
         <div>
-          {blog.title} {blog.author} <button onClick={() => setExpanded(true)}>view</button>
+          {blog.title} by {blog.author} <button onClick={() => setExpanded(true)}>view</button>
         </div>
       )}
       {expanded && (
         <div>
-          {blog.title} {blog.author} <button onClick={() => setExpanded(false)}>hide</button> <br />
+          {blog.title} by {blog.author} <button onClick={() => setExpanded(false)}>hide</button> <br />
           {blog.url} <br/>
           {blog.likes} <button onClick={() => likeBlog(blog.id)}>like</button> <br/>
           {blog.user.username} <br />
@@ -29,8 +29,8 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
             <button onClick={() => deleteBlog(blog.id)}>remove</button>
           )}
         </div>
-      )}  
-    </div>   
+      )}
+    </div>
   )
 }
 
