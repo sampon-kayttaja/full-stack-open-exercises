@@ -121,6 +121,8 @@ const App = () => {
       })
   }
 
+  const blogsSorted = [...blogs].sort((a, b) => b.likes - a.likes)
+
   return (
     <div>
       <h1><i>Blog App</i></h1>
@@ -143,7 +145,7 @@ const App = () => {
           </button>
           {blogForm()}
           <h3>Blogs:</h3>
-          {blogs.map(blog =>
+          {blogsSorted.map(blog =>
             <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
           )}
         </div>
