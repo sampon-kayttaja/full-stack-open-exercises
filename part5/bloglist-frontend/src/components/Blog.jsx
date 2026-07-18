@@ -22,9 +22,9 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
       {expanded && (
         <div>
           {blog.title} by {blog.author} <button onClick={() => setExpanded(false)}>hide</button> <br />
-          {blog.url} <br/>
-          {blog.likes} <button onClick={() => likeBlog(blog.id)}>like</button> <br/>
-          {blog.user.username} <br />
+          <div>{blog.url}</div>
+          <div>{blog.likes} <button onClick={() => likeBlog(blog.id)}>like</button></div>
+          <div>{blog.user.username}</div>
           {userCheck && (
             <button onClick={() => deleteBlog(blog.id)}>remove</button>
           )}
