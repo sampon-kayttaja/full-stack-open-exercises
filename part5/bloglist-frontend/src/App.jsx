@@ -70,7 +70,7 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+      <Togglable buttonLabel='add new blog' ref={blogFormRef}>
         <BlogForm addBlog={addBlog}/>
       </Togglable>
     )
@@ -104,7 +104,10 @@ const App = () => {
       })
   }
 
-  const likeBlog = (id) => {
+  const [likeInProgress, setLikeInProgress] = useState(false)
+
+  const handleLike = (id) => {
+    setLikeInProgress(true)
     const blog = blogs.find(b => b.id === id)
     const changedBlog = { ...blog, likes: blog.likes + 1 }
 
@@ -119,6 +122,7 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       })
+      .finally(() => setLikeInProgress(false))
   }
 
   const deleteBlog = (id) => {
@@ -176,7 +180,7 @@ const App = () => {
           {blogForm()}
           <h3>Blogs:</h3>
           {blogsSorted.map(blog =>
-            <Blog key={blog.id} blog={blog} likeBlog={likeBlog} deleteBlog={deleteBlog} user={user} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} deleteBlog={deleteBlog} user={user} likeInProgress={likeInProgress}/>
           )}
         </div>
       )}
