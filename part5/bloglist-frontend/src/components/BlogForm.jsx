@@ -1,23 +1,22 @@
 import { useState } from 'react'
 
-const BlogForm = ({ addBlog, }) => {
+const BlogForm = ({ handleSubmit }) => {
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
 
-  const handleSubmit = async event => {
+  const onSubmit = async event => {
     event.preventDefault()
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url
+    const blogObject = { title: newBlog.title, author: newBlog.author, url: newBlog.url }
+    try {
+      await handleSubmit(blogObject)
+      setNewBlog({ title: '', author: '', url: '' })
+    } catch (error) {
     }
-    addBlog(blogObject)
-    setNewBlog({ title: '', author: '', url: '' })
   }
 
   return (
     <>
-      <h2>create new</h2>
-      <form onSubmit={handleSubmit}>
+      <h2>add new</h2>
+      <form onSubmit={onSubmit}>
         <div>
           <label>
             title
@@ -49,7 +48,7 @@ const BlogForm = ({ addBlog, }) => {
           </label>
         </div>
         <button type="submit">add</button>
-    </form>
+      </form>
     </>
   )
 }

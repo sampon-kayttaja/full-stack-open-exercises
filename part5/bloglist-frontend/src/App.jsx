@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
-import { ErrorMessage, SuccessMessage} from './components/Notif'
-import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
+import { ErrorMessage, SuccessMessage } from './components/Notif'
+import Navigation from './components/Navigation'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import AddNewBlog from './pages/AddBlog'
+import Blog from './components/Blog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,7 +17,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const blogFormRef = useRef()
+  const [likeInProgress, setLikeInProgress] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -27,84 +29,55 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
-  const handleLogin = async event => {
+  const showError = (msg) => {
+    setErrorMessage(msg)
+    setTimeout(() => setErrorMessage(null), 3000)
+  }
+
+  const showSuccess = (msg) => {
+    setSuccessMessage(msg)
+    setTimeout(() => setSuccessMessage(null), 3000)
+  }
+
+  const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-      setSuccessMessage('login successful')
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
+      showSuccess('login successful')
+      return true
     } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      showError('wrong credentials')
+      return false
     }
-  }
-
-  const loginForm = () => {
-    return (
-      <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
-      />
-    )
-  }
-
-  const blogForm = () => {
-    return (
-      <Togglable buttonLabel='add new blog' ref={blogFormRef}>
-        <BlogForm addBlog={addBlog}/>
-      </Togglable>
-    )
   }
 
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
-    setSuccessMessage('logout successful')
-    setTimeout(() => {
-      setSuccessMessage(null)
-    }, 5000)
+    showSuccess('logout successful')
   }
 
   const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    blogService
+    return blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+        showSuccess(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+        return true
       })
       .catch(() => {
-        setErrorMessage('error creating blog')
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+      showError('error creating blog')
+      return false
       })
   }
-
-  const [likeInProgress, setLikeInProgress] = useState(false)
 
   const handleLike = (id) => {
     setLikeInProgress(true)
@@ -114,14 +87,9 @@ const App = () => {
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
-        setBlogs(blogs.map(b => b.id !== id ? b : returnedBlog))
+        setBlogs(blogs.map(b => (b.id !== id ? b : returnedBlog)))
       })
-      .catch(() => {
-        setErrorMessage(`the blog '${blog.title}' was already removed from server`)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-      })
+      .catch(() => showError(`the blog '${blog.title}' was already removed from server`))
       .finally(() => setLikeInProgress(false))
   }
 
@@ -129,10 +97,7 @@ const App = () => {
     const blog = blogs.find(b => b.id === id)
 
     if (user.username !== blog.user.username) {
-      setErrorMessage('unauthorized: not the creator of this blog')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      showError('unauthorized: not the creator of this blog')
       return
     }
 
@@ -141,51 +106,69 @@ const App = () => {
         .remove(id)
         .then(() => {
           setBlogs(blogs.filter(b => b.id !== id))
-          setSuccessMessage(`the blog '${blog.title}' was removed successfully`)
-          setTimeout(() => {
-            setSuccessMessage(null)
-          }, 5000)
+          showSuccess(`the blog '${blog.title}' was removed successfully`)
         })
-        .catch(() => {
-          setErrorMessage(`the blog '${blog.title}' was already removed from server`)
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-        }
-    )}
+        .catch(() => showError(`the blog '${blog.title}' was already removed from server`))
+    }
   }
-
-  const blogsSorted = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
     <div>
       <h1><i>Blog App</i></h1>
-      {!user && (
-        <div>
-          <h2>login</h2>
-          <ErrorMessage message={errorMessage}/>
-          <SuccessMessage message={successMessage}/>
-          {loginForm()}
-        </div>
-      )}
+      <Navigation user={user} logout={logout} />
+      <ErrorMessage message={errorMessage} />
+      <SuccessMessage message={successMessage} />
 
-      {user && (
-        <div>
-          <ErrorMessage message={errorMessage}/>
-          <SuccessMessage message={successMessage}/>
-          <p>{user.name} logged in</p>
-          <button onClick={logout}>
-            logout
-          </button>
-          {blogForm()}
-          <h3>Blogs:</h3>
-          {blogsSorted.map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} deleteBlog={deleteBlog} user={user} likeInProgress={likeInProgress}/>
-          )}
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              user={user}
+              blogs={blogs}
+              handleLike={handleLike}
+              deleteBlog={deleteBlog}
+              likeInProgress={likeInProgress}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <LoginPage
+              username={username}
+              password={password}
+              handleUsernameChange={({ target }) => setUsername(target.value)}
+              handlePasswordChange={({ target }) => setPassword(target.value)}
+              handleLogin={handleLogin}
+              user={user}
+            />
+          }
+        />
+        <Route
+          path="/addblog"
+          element={ user ?
+            <AddNewBlog
+              user={user}
+              addBlog={addBlog}
+            /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            <Blog
+              blogs={blogs} 
+              handleLike={handleLike}
+              deleteBlog={deleteBlog}
+              user={user}
+              likeInProgress={likeInProgress}
+            />
+          }
+        />
+      </Routes>
     </div>
   )
 }
- 
+
 export default App

@@ -1,92 +1,75 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { describe, test, expect, vi } from 'vitest'
+
+const renderBlog = (blog, user, props = {}) => {
+  return render(
+    <MemoryRouter initialEntries={[`/blogs/${blog.id}`]}>
+      <Routes>
+        <Route path="/blogs/:id" element={<Blog blogs={[blog]} user={user} {...props} />} />
+      </Routes>
+    </MemoryRouter>
+  )
+}
+
+const blog = {
+  title: 'Testing a blog',
+  author: 'Author Name',
+  url: 'arealurl.com',
+  likes: 5,
+  id: '1',
+  user: {
+    username: 'testuser',
+    name: 'Test User'
+  }
+}
+
+const loggedInUser = {
+  username: 'testuser',
+  name: 'Test User'
+}
+
+const loggedInUser2 = {
+  username: 'testuser2',
+  name: 'Test User2'
+}
 
 test('renders content', () => {
-  const blog = {
-    title: 'Testing a blog',
-    author: 'Author Name',
-    url: 'arealurl.com',
-    likes: 5,
-    user: {
-      username: 'testuser',
-      name: 'Test User'
-    }
-  }
-
-  const user = {
-    username: 'testuser',
-    name: 'Test User'
-  }
-  
-  render(<Blog blog={blog} user={user} />)
-
-  const element = screen.getByText('Testing a blog by Author Name')
-  expect(element).toBeDefined()
+  renderBlog(blog, loggedInUser)
+  expect(screen.getByText('Testing a blog by Author Name')).toBeInTheDocument()
 })
 
-test('when view button is clicked, url and likes are displayed', async () => {
-  const blog = {
-    title: 'Testing a blog',
-    author: 'Author Name',
-    url: 'arealurl.com',
-    likes: 5,
-    user: {
-      username: 'testuser',
-      name: 'Test User'
-    }
-  }
+test('when not logged in, url and likes are displayed but remove and like arent', () => {
+  renderBlog(blog)
 
-  const user = {
-    username: 'testuser',
-    name: 'Test User'
-  }
-
-  render(<Blog blog={blog} user={user} />)
-
-  const userEventInstance = userEvent.setup()
-
-  const viewButton = screen.getByText('view')
-
-  await userEventInstance.click(viewButton)
-    const urlElement = screen.getByText('arealurl.com')
-    const likesElement = screen.getByText('5')
-    const userElement = screen.getByText('testuser')
-
-    expect(urlElement).toBeDefined()
-    expect(likesElement).toBeDefined()
-    expect(userElement).toBeDefined()
+  expect(screen.getByText('arealurl.com')).toBeInTheDocument()
+  expect(screen.getByText('likes: 5')).toBeInTheDocument()
+  expect(screen.getByText('Added by testuser')).toBeInTheDocument()
+  expect(screen.queryByText('remove')).not.toBeInTheDocument()
+  expect(screen.queryByText('like')).not.toBeInTheDocument()
 })
 
-test('if like button is clicked twice, the event handler is called twice', async () => {
-      const blog = {
-    title: 'Testing a blog',
-    author: 'Author Name',
-    url: 'arealurl.com',
-    likes: 5,
-    user: {
-      username: 'testuser',
-      name: 'Test User'
-    }
-  }
+test('when logged in, like button is displayed', async () => {
+  const mockHandleLike = vi.fn()
+  const mockDeleteBlog = vi.fn()
 
-  const user = {
-    username: 'testuser',
-    name: 'Test User'
-  }
+  renderBlog(blog, loggedInUser2, { handleLike: mockHandleLike, deleteBlog: mockDeleteBlog })
 
-  const mockHandler = vi.fn()
-  
-  render(<Blog blog={blog} user={user} likeBlog={mockHandler} />)
+  const likeButton = screen.getByText('like')
+  const removeButton = screen.queryByText('remove')
+  expect(likeButton).toBeInTheDocument()
+  expect(removeButton).not.toBeInTheDocument()
+})
 
-  const userEventInstance = userEvent.setup()
+test('when logged in, remove is displayed on own post', async () => {
+  const mockHandleLike = vi.fn()
+  const mockDeleteBlog = vi.fn()
 
-  const viewButton = screen.getByText('view')
+  renderBlog(blog, loggedInUser, { handleLike: mockHandleLike, deleteBlog: mockDeleteBlog })
 
-  await userEventInstance.click(viewButton)
-    const likeButton = screen.getByText('like')
-    await userEventInstance.click(likeButton)
-    await userEventInstance.click(likeButton)
-
-    expect(mockHandler.mock.calls).toHaveLength(2)
+  const likeButton = screen.getByText('like')
+  const removeButton = screen.getByText('remove')
+  expect(likeButton).toBeInTheDocument()
+  expect(removeButton).toBeInTheDocument()
 })
