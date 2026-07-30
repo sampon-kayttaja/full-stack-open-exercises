@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TextField, Button } from '@mui/material'
 
 const BlogForm = ({ handleSubmit }) => {
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
@@ -18,36 +19,32 @@ const BlogForm = ({ handleSubmit }) => {
       <h2>add new</h2>
       <form onSubmit={onSubmit}>
         <div>
-          <label>
-            title
-            <input
-              type="text"
-              value={newBlog.title}
-              onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
-            />
-          </label>
-        </div>
-        <div>   
-          <label>
-            author
-            <input
-              type="text"
-              value={newBlog.author}
-              onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
-            />
-          </label>
+          <TextField
+            label="title"
+            type="text"
+            value={newBlog.title}
+            onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
+          />
         </div>
         <div>
-          <label>
-            url
-            <input
-              type="text"
-              value={newBlog.url}
-              onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
-            />
-          </label>
+          <TextField
+            style={{ marginTop: 10 }}
+            label="author"
+            type="text"
+            value={newBlog.author}
+            onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
+          />
         </div>
-        <button type="submit">add</button>
+        <div>
+          <TextField
+            style={{ marginTop: 10 }}
+            label="url"
+            type="text"
+            value={newBlog.url}
+            onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
+          />
+        </div>
+        <div><Button type="submit" variant="contained" style={{ marginTop: 10 }}>add</Button></div>
       </form>
     </>
   )

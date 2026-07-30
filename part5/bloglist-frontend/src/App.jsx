@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import AddNewBlog from './pages/AddBlog'
 import Blog from './components/Blog'
+import { Container } from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -113,61 +114,62 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1><i>Blog App</i></h1>
-      <Navigation user={user} logout={logout} />
-      <ErrorMessage message={errorMessage} />
-      <SuccessMessage message={successMessage} />
+    <Container>
+      <div>
+        <Navigation user={user} logout={logout} />
+        <ErrorMessage message={errorMessage} />
+        <SuccessMessage message={successMessage} />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              user={user}
-              blogs={blogs}
-              handleLike={handleLike}
-              deleteBlog={deleteBlog}
-              likeInProgress={likeInProgress}
-            />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <LoginPage
-              username={username}
-              password={password}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-              handleLogin={handleLogin}
-              user={user}
-            />
-          }
-        />
-        <Route
-          path="/addblog"
-          element={ user ?
-            <AddNewBlog
-              user={user}
-              addBlog={addBlog}
-            /> : <Navigate to="/login" />
-          }
-        />
-        <Route
-          path="/blogs/:id"
-          element={
-            <Blog
-              blogs={blogs} 
-              handleLike={handleLike}
-              deleteBlog={deleteBlog}
-              user={user}
-              likeInProgress={likeInProgress}
-            />
-          }
-        />
-      </Routes>
-    </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                user={user}
+                blogs={blogs}
+                handleLike={handleLike}
+                deleteBlog={deleteBlog}
+                likeInProgress={likeInProgress}
+              />
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <LoginPage
+                username={username}
+                password={password}
+                handleUsernameChange={({ target }) => setUsername(target.value)}
+                handlePasswordChange={({ target }) => setPassword(target.value)}
+                handleLogin={handleLogin}
+                user={user}
+              />
+            }
+          />
+          <Route
+            path="/addblog"
+            element={ user ?
+              <AddNewBlog
+                user={user}
+                addBlog={addBlog}
+              /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              <Blog
+                blogs={blogs} 
+                handleLike={handleLike}
+                deleteBlog={deleteBlog}
+                user={user}
+                likeInProgress={likeInProgress}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Container>
   )
 }
 
