@@ -1,9 +1,11 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { useAnecdotes } from './hooks/useAnecdotes'
+import { useSetNotification } from './contexts/NotificationContext'
 
 const App = () => {
   const { anecdotes, isPending, updateAnecdote } = useAnecdotes()
+  const setNotification = useSetNotification()
 
   if (isPending) {
     return <div>loading data...</div>
